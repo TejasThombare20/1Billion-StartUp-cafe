@@ -22,7 +22,6 @@ const express = require('express');
 const app = express()
 
 // Body parser for our json data
-app.use(express.json())
 
 const cors = require('cors');
 app.use(cors({origin : true}));
@@ -34,8 +33,80 @@ app.use ((req, res, next) =>{
 // firebase credential
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccountKey)
-  });
+});
 
+let endpointSecret = process.env.WEBHOOK_SECRET || "";
+
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  (request, response) => {
+    const sig = request.headers["stripe-signature"];
+
+    let eventType;
+    let data;
+
+    if (endpointSecret) {
+      let event;
+      try {
+        event = stripe.webhooks.constructEvent(
+          request.body,
+          sig,
+          endpointSecret
+        );
+      } catch (err) {
+        response.status(400).send(`Webhook Error: ${err.message}`);
+        return;
+      }
+      data = event.data.object;
+      eventType = event.type;
+    } else {
+      data = request.body.data.object;
+      eventType = request.body.type;
+    }
+
+    if (eventType === "checkout.session.completed") {
+      stripe.customers.retrieve(data.customer).then((customer) => {
+        create0rder(customer, data, response);
+      });
+    }
+
+    // Return a 200 response to acknowledge receipt of the event
+    response.send().end();
+  }
+);
+
+const create0rder = async (customer, intent, res) => {
+  try {
+    const orderId = Date.now();
+
+    const data = {
+      intentId: intent.id,
+      orderId: orderId,
+      amount: intent.amount_total,
+      created: intent.created,
+      payment_method_types: intent.payment_method_types,
+      status: intent.payment_status,
+      customer: intent.customer_details,
+      shipping_details: intent.shipping_details,
+      userId: customer.metadata.user_id,
+      items: JSON.parse(customer.metadata.cart),
+      total: customer.metadata.total,
+      sts: "preparing",
+    };
+
+    await db.collection("/orders").doc(`/${orderId}/`).set(data);
+    deleteCart(customer.metadata.user_id, JSON.parse(customer.metadata.cart));
+
+    return res.status(200).send({ success: true });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
+
+app.use(express.json())
 app.get("/", (req, res) =>{
      res.send("hello world");
 })
