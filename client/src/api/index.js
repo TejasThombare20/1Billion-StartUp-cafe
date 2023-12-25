@@ -1,9 +1,9 @@
 import axios from "axios";
 import { avatar } from "../assets";
 
-export const baseUrl = 
+export const baseUrl = "https://one-trillion.onrender.com"
 // "http://localhost:5001";
-"https://billion-the-startup-cafe/us-central1/app";
+// "https://billion-the-startup-cafe/us-central1/app";
 
 export const validateUserJWTToken = async (token) => {
   try {
