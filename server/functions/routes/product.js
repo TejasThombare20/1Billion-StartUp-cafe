@@ -4,6 +4,7 @@ const admin = require("firebase-admin");
 const db = admin.firestore();
 const Razorpay = require("razorpay");
 var crypto = require("crypto");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 
 router.post("/create", async (req, res) => {
