@@ -256,7 +256,7 @@ router.post("/create-checkout-session", async (req, res) => {
   res.send({ url: session.url });
 });
 
-let endpointSecret;
+let endpointSecret = process.env.WEBHOOK_SECRET || "";
 
 router.post(
   "/webhook",
@@ -282,8 +282,8 @@ router.post(
       data = event.data.object;
       eventType = event.type;
     } else {
-      data = req.body.data.object;
-      eventType = req.body.type;
+      data = request.body.data.object;
+      eventType = request.body.type;
     }
 
     if (eventType === "checkout.session.completed") {
@@ -319,7 +319,7 @@ const create0rder = async (customer, intent, res) => {
     await db.collection("/orders").doc(`/${orderId}/`).set(data);
     deleteCart(customer.metadata.user_id, JSON.parse(customer.metadata.cart));
 
-    return res.status(280).send({ success: true });
+    return res.status(200).send({ success: true });
   } catch (err) {
     console.log(err);
   }

@@ -141,14 +141,14 @@ const handleOpenRazorpay = async (data, user, cart) => {
         .post(`${baseUrl}/api/products/verify`, { response: response })
         .then((res) => {
           if (res.data.message === "sign Valid") {
-            window.location.href = `http://localhost:3000/checkout-sucess`;
+            window.location.href = `https://new-repo-delta-bice.vercel.app/checkout-sucess`;
           } else {
-            window.location.href = `http://localhost:3000`;
+            window.location.href = `https://new-repo-delta-bice.vercel.app/`;
           }
         })
         .catch((err) => {
           console.log(err);
-          window.location.href = `http://localhost:3000`;
+          window.location.href = `https://new-repo-delta-bice.vercel.app/`;
         });
     },
     prefill: {

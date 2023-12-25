@@ -48,7 +48,7 @@ const DBHeader = () => {
                     < motion.div {...buttonClick}
                         className=' w-12 h-12   rounded-full shadow-md bg-lightOverlay border  cursor-pointer flex items-center justify-center'>
                            
-                        <motion.img src={user.picture ? user?.picture : avatar}
+                        <motion.img src={user?.picture ? user?.picture : avatar}
                             whileHover={{ scale: 1.5 }} alt='profile_image'
                             referrerPolicy='no-referrer'
                             className='w-full h-full object-cover ' />
