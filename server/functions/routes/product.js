@@ -5,6 +5,7 @@ const db = admin.firestore();
 const Razorpay = require("razorpay");
 var crypto = require("crypto");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const bodyParser = require('body-parser');
 
 router.post("/create", async (req, res) => {
   try {
@@ -260,9 +261,10 @@ let endpointSecret = process.env.WEBHOOK_SECRET || "";
 
 router.post(
   "/webhook",
-  express.raw({ type: "application/json" }),
+  bodyParser.raw({ type: 'application/json' }),
   (request, response) => {
     const sig = request.headers["stripe-signature"];
+    const rawBody = request.body; // This is the raw buffer body
 
     let eventType;
     let data;
@@ -270,8 +272,9 @@ router.post(
     if (endpointSecret) {
       let event;
       try {
+        // Use the raw body instead of the parsed body
         event = stripe.webhooks.constructEvent(
-          request.body,
+          rawBody,
           sig,
           endpointSecret
         );
@@ -296,7 +299,6 @@ router.post(
     response.send().end();
   }
 );
-
 const create0rder = async (customer, intent, res) => {
   try {
     const orderId = Date.now();
