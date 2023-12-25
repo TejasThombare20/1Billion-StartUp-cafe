@@ -20,7 +20,6 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const serviceAccountKey = require('./serviceAccountKey.json');
 const express = require('express');
-const app = express()
 
 // Body parser for our json data
 
@@ -36,6 +35,7 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccountKey)
 });
 
+const app = express()
 let endpointSecret = process.env.WEBHOOK_SECRET || "";
 
 app.post(
