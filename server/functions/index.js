@@ -13,6 +13,7 @@ const functions = require("firebase-functions");
 const admin = require('firebase-admin');
 require('dotenv').config();
 const port = process.env.PORT||8000;
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 
 
@@ -103,6 +104,16 @@ const create0rder = async (customer, intent, res) => {
     console.log(err);
   }
 };
+const deleteCart = async (userId, items) => {
+    items.map(async (data) => {
+      await db
+        .collection("cartItems")
+        .doc(`/${userId}/`)
+        .collection("items")
+        .doc(`/${data.productId}/`)
+        .delete();
+    });
+  };
 
 
 

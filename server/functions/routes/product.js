@@ -4,7 +4,7 @@ const admin = require("firebase-admin");
 const db = admin.firestore();
 const Razorpay = require("razorpay");
 var crypto = require("crypto");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 
 router.post("/create", async (req, res) => {
   try {
@@ -258,16 +258,7 @@ router.post("/create-checkout-session", async (req, res) => {
 
 
 
-const deleteCart = async (userId, items) => {
-  items.map(async (data) => {
-    await db
-      .collection("cartItems")
-      .doc(`/${userId}/`)
-      .collection("items")
-      .doc(`/${data.productId}/`)
-      .delete();
-  });
-};
+
 
 
 
