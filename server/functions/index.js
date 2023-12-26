@@ -40,7 +40,8 @@ let endpointSecret = process.env.WEBHOOK_SECRET || "";
 
 app.post(
   "/webhook",
-  // express.raw({ type: "application/json" }),
+  express.raw({ type: "application/json" }),
+   
   (request, response) => {
     const sig = request.headers["stripe-signature"];
 
