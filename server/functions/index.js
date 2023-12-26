@@ -40,10 +40,10 @@ let endpointSecret = process.env.WEBHOOK_SECRET || "";
 
 app.post(
   "/webhook",
-  express.raw({ type: "application/json" }),
+  // express.raw({ type: "application/json" }),
   (request, response) => {
     const sig = request.headers["stripe-signature"];
-    const body = request.body.text()
+
     let eventType;
     let data;
 
@@ -51,7 +51,7 @@ app.post(
       let event;
       try {
         event = stripe.webhooks.constructEvent(
-        body,
+         request.body,
           sig,
           endpointSecret
         );
