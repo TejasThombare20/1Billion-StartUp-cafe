@@ -53,6 +53,8 @@ app.post(
   "/webhook",   
   (request, response) => {
     const sig = request.headers["stripe-signature"];
+
+    console.log("sig",sig)
      
    console.log("Request :",request)
    console.log("Headers",request.headers)
