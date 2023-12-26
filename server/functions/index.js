@@ -61,7 +61,7 @@ app.post(
       let event;
       try {
         event = stripe.webhooks.constructEvent(
-          req.rawBody,
+          request.rawBody,
           sig,
           endpointSecret
         );
