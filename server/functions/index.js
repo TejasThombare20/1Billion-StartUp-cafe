@@ -14,7 +14,7 @@ const admin = require('firebase-admin');
 require('dotenv').config();
 const port = process.env.PORT||8000;
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
+const bodyParser = require('body-parser');
 
 
 
@@ -23,6 +23,8 @@ const express = require('express');
 
 const app = express()
 // Body parser for our json data
+
+
 
 const cors = require('cors');
 app.use(cors({origin : true}));
@@ -36,13 +38,19 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccountKey)
 });
 
+app.use(bodyParser.json({
+  verify: function (req, res, buf) {
+      var url = req.originalUrl;
+      if (url.startsWith('/webhook')) {
+          req.rawBody = buf.toString()
+      }
+  }
+}));
+
 let endpointSecret = process.env.WEBHOOK_SECRET || "";
 
 app.post(
-  "/webhook",
-  express.raw({ type: "*/*"}),
-
-   
+  "/webhook",   
   (request, response) => {
     const sig = request.headers["stripe-signature"];
     
@@ -53,7 +61,7 @@ app.post(
       let event;
       try {
         event = stripe.webhooks.constructEvent(
-         request.body,
+          req.rawBody,
           sig,
           endpointSecret
         );
