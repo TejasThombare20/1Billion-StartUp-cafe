@@ -20,8 +20,8 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const serviceAccountKey = require('./serviceAccountKey.json');
 const express = require('express');
-const app = express()
 
+const app = express()
 // Body parser for our json data
 
 const cors = require('cors');
@@ -43,7 +43,7 @@ app.post(
   express.raw({ type: "application/json" }),
   (request, response) => {
     const sig = request.headers["stripe-signature"];
-
+    const body = request.body.text()
     let eventType;
     let data;
 
@@ -51,7 +51,7 @@ app.post(
       let event;
       try {
         event = stripe.webhooks.constructEvent(
-          request.body,
+        body,
           sig,
           endpointSecret
         );
